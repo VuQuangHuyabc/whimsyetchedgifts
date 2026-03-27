@@ -200,9 +200,6 @@ const products = [
     }
 ];
 
-// Shopping Cart
-let cart = [];
-
 // Get product ID from URL
 function getProductIdFromUrl() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -380,6 +377,14 @@ function decreaseQuantity() {
 function addToCart(productId) {
     const product = products.find(p => p.id === productId);
     const quantity = parseInt(document.getElementById('quantity').value) || 1;
+    
+    // Get existing cart from localStorage
+    let cart = [];
+    const savedCart = localStorage.getItem('whimsyCart');
+    if (savedCart) {
+        cart = JSON.parse(savedCart);
+    }
+    
     const existingItem = cart.find(item => item.id === productId);
     
     if (existingItem) {
@@ -387,6 +392,9 @@ function addToCart(productId) {
     } else {
         cart.push({ ...product, quantity });
     }
+    
+    // Save to localStorage
+    localStorage.setItem('whimsyCart', JSON.stringify(cart));
     
     updateCartCount();
     showToast(`${product.name} added to cart!`, 'success');
@@ -401,6 +409,14 @@ function addToWishlist(productId) {
 // Update cart count
 function updateCartCount() {
     const cartCount = document.getElementById('cart-count');
+    
+    // Get cart from localStorage
+    let cart = [];
+    const savedCart = localStorage.getItem('whimsyCart');
+    if (savedCart) {
+        cart = JSON.parse(savedCart);
+    }
+    
     const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
     cartCount.textContent = totalItems;
     cartCount.style.display = totalItems > 0 ? 'inline-block' : 'none';
